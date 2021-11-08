@@ -139,6 +139,9 @@ const addAccount = async (req, res) => {
     }
     const { identifyNumber, userName, password, email, name, phoneNumber, address } = req.body;
     let user;
+    if(role!== 'staff'|| role !=='receptionist'){
+        return res.json({status:"fail",msg:"Role not found"})
+    }
     if (role === 'staff') {
         user = await StaffStation.findOne({ email: email });
     } else if (role === 'receptionist') {
@@ -182,6 +185,9 @@ const editAccount = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(422).json({ msg: 'Invalid input, please check your data' })
     }
+    if(role!== 'staff'|| role !=='receptionist'){
+        return res.json({status:"fail",msg:"Role not found"})
+    }
     try {
         if (role === 'staff') {
             StaffStation.find({ _id: id }, (err, doc) => {
@@ -213,6 +219,9 @@ const deleteAccount = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(422).json({ msg: 'Invalid input, please check your data' })
+    }
+    if(role!== 'staff'|| role !=='receptionist'){
+        return res.json({status:"fail",msg:"Role not found"})
     }
     if (role === 'staff') {
         try {
@@ -251,6 +260,9 @@ const getAccount = async (req, res) => {
     }
     const role = req.query.type;
     console.log(role);
+    if(role!== 'staff'|| role !=='receptionist'){
+        return res.json({status:"fail",msg:"Role not found"})
+    }
     if (role === 'receptionist') {
         Receptionist.find({}, (err, doc) => {
             if (err) {
@@ -277,6 +289,9 @@ const getDetailAccount = async (req, res) => {
     const role = req.query.type.split('/')[0];
     const id = req.query.type.split('/')[1]
     console.log(role, id)
+    if(role!== 'staff'|| role !=='receptionist'){
+        return res.json({status:"fail",msg:"Role not found"})
+    }
     if (role === 'receptionist') {
         try {
             Receptionist.findOne({ _id: id }, function (err, doc) {
