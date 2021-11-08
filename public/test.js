@@ -1,24 +1,38 @@
-fetch("https://nmcnpm.herokuapp.com/api/v1/admin/login", {
-     
-    // Adding method type
-    method: "POST",
-    mode: 'no-cors',
-     
-    // Adding body or contents to send
-    body: JSON.stringify({
-        email: "admin@email.com",
+// axios.post('http://localhost:5000/api/v1/admin/login', {
+//     email: 'daotrungkien515@gmail.com',
+//     password: 'Last name'
+//   })
+//   .then(function (response) {
+//     console.log(response.data);
+//   })
+//   .catch(function (error) {
+//     console.log(error);
+//   });
+
+// const xhr = new XMLHttpRequest();
+// xhr.open('POST', 'https://nmcnpm.herokuapp.com/api/v1/admin/login');
+// xhr.setRequestHeader('X-PINGOTHER', 'pingpong');
+// xhr.setRequestHeader('Content-Type', 'application/xml');
+// xhr.onreadystatechange = handler;
+// xhr.send('<person><name>Arun</name></person>');
+
+async function postData(url = 'http://localhost:5000/api/v1/admin/login', data = {
+        email: "admin@gmail.com",
         password: "admin"
-    }),
-     
-    // Adding headers to the request
-    headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        
-    }
-})
- 
-// Converting to JSON
-.then(response => response.json())
- 
-// Displaying results to console
-.then(json => console.log(json));
+    }) {
+        const response = await fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify(data)
+        });
+        const date = await response.json()
+        console.log(date)
+        return response.json(); 
+}

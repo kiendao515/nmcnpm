@@ -94,15 +94,19 @@ const login = async (req, res, next) => {
 
 // login - dang nhap tai khoan admin
 const adminLogin = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ msg: 'Invalid input, please check your data' });
+    }
     const { email, password } = req.body;
-    Admin.findOne({ email: email }, function (err, doc) {
+    Admin.findOne({ email: email },  (err, doc) => {
         if (err) {
-            return res.status(500).json({ stauts: 'fail', msg: 'server error' })
+            return res.json({ stauts: 'fail', msg: 'server error' })
         } else if (!doc) {
-            return res.status(404).json({ status: 'fail', msg: 'Can not find that email !' })
+            return res.json({ status: 'fail', msg: 'Can not find that email !' })
         }
         else if (password !== doc.password) {
-            return res.status(404).json({ status: 'fail', msg: 'Password is not match!' })
+            return res.json({ status: 'fail', msg: 'Password is not match!' })
         }
         return res.json({ status: "success", token: createJwtToken(doc._id) });
     })

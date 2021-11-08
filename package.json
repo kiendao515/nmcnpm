@@ -8,6 +8,7 @@
     "start": "node index.js"
   },
   "author": "",
+  "proxy": "http://localhost:5000",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -21,5 +22,6 @@
     "nodemailer": "^6.7.0",
     "nodemon": "^2.0.14",
     "path": "^0.12.7"
+    
   }
 }
