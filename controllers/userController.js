@@ -10,7 +10,7 @@ const crypto = require("crypto");
 const register = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' })
+        return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
     const { identifyNumber, userName, password, email, phoneNumber, address, name, balance, residentID } = req.body;
     let user;
@@ -22,7 +22,7 @@ const register = async (req, res) => {
         res.status(500).send({ msg: 'Server Error' })
     }
     if (user) {
-        return res.status(422).json({ msg: 'User already exists, please login instead.' })
+        return res.status(200).json({ msg: 'User already exists, please login instead.' })
     }
     let hashedPassword;
     try {
@@ -37,9 +37,9 @@ const register = async (req, res) => {
         let identityNumberArray = users.map(data => data.identifyNumber);
         let phoneNumberArray = users.map(data => data.phoneNumber);
         if (identityNumberArray.includes(identifyNumber)) {
-            return res.status(422).json({ status: 'fail', msg: 'Indentity number existed!' })
+            return res.status(200).json({ status: 'fail', msg: 'Indentity number existed!' })
         } else if (phoneNumberArray.includes(phoneNumber)) {
-            return res.status(422).json({ status: 'fail', msg: 'Telephone number existed !' })
+            return res.status(200).json({ status: 'fail', msg: 'Telephone number existed !' })
         }
     }
 
@@ -61,7 +61,7 @@ const register = async (req, res) => {
 const login = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' });
+        return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
     const { email, password } = req.body;
     let user;
@@ -96,7 +96,7 @@ const login = async (req, res, next) => {
 const adminLogin = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' });
+        return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
     const { email, password } = req.body;
     Admin.findOne({ email: email },  (err, doc) => {
@@ -135,7 +135,7 @@ const addAccount = async (req, res) => {
     const role = req.query.type;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' })
+        return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
     const { identifyNumber, userName, password, email, name, phoneNumber, address } = req.body;
     let user;
@@ -150,7 +150,7 @@ const addAccount = async (req, res) => {
     }
     console.log(user)
     if (user) {
-        return res.status(422).json({ msg: 'Email already existed' })
+        return res.status(200).json({ msg: 'Email already existed' })
     }
     let hashedPassword;
     try {
@@ -184,7 +184,7 @@ const editAccount = async (req, res) => {
     console.log(role, id)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' })
+        return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
     const roles=["staff","receptionist"]
     if(!roles.includes(role)){
@@ -220,7 +220,7 @@ const deleteAccount = async (req, res) => {
     const id = req.query.type.split('/')[1];
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(422).json({ msg: 'Invalid input, please check your data' })
+        res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
     const roles=["staff","receptionist"]
     if(!roles.includes(role)){
@@ -259,7 +259,7 @@ const deleteAccount = async (req, res) => {
 const getAccount = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' });
+        return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
     const role = req.query.type;
     console.log(role);
@@ -290,7 +290,7 @@ const getAccount = async (req, res) => {
 const getDetailAccount = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' })
+        return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
     const role = req.query.type.split('/')[0];
     const id = req.query.type.split('/')[1]
@@ -333,7 +333,7 @@ const searchAccount = async (req, res) => {
     const errors = validationResult(req);
     let staff, receptionist;
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' })
+        return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
     const q = req.query.q
     if (!q) {
@@ -355,7 +355,7 @@ const searchAccount = async (req, res) => {
 const forgetPass = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' })
+        return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
     const user = await User.findOne({ email: req.body.email });
     console.log(user)
@@ -408,7 +408,7 @@ const receptionistLogin = async (req, res) => {
 const getAllUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ msg: 'Invalid input, please check your data' });
+        return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
     try {
         await User.find({}, (err, doc) => {

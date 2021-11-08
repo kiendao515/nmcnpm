@@ -1,13 +1,13 @@
-axios.post('https://nmcnpm.herokuapp.com/api/v1/admin/login', {
-    email: 'admin@gmail.com',
-    password: 'admin'
-  })
-  .then(function (response) {
-    console.log(response.data);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+// axios.post('https://nmcnpm.herokuapp.com/api/v1/admin/login', {
+//     email: 'admin@gmail.com',
+//     password: 'admin'
+//   })
+//   .then(function (response) {
+//     console.log(response.data);
+//   })
+//   .catch(function (error) {
+//     console.log(error);
+//   });
 
 // const xhr = new XMLHttpRequest();
 // xhr.open('POST', 'https://nmcnpm.herokuapp.com/api/v1/admin/login');
@@ -37,9 +37,10 @@ axios.post('https://nmcnpm.herokuapp.com/api/v1/admin/login', {
 //         return response.json(); 
 // }
 
-const api = `http://localhost:5000/api/v1/accounts?type=staff`;
-let token = sessionStorage.getItem('data')
-axios.get(api, { headers: {"Authorization" : `Bearer ${token}`} })
+const api = `http://localhost:5000/api/v1/accounts/add?type=staff`;
+let token = localStorage.getItem('data')
+console.log(token)
+axios.post(api,{email:"daotrungkien@"}, { headers: {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiO…IyNX0.xabuV_fyRvQAx7N2uN3ir9iZ6HKiYXcgSmeodbsCywI"} })
         .then(res => {
             console.log(res.data);
 })
