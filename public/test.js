@@ -1,13 +1,13 @@
-// axios.post('https://nmcnpm.herokuapp.com/api/v1/admin/login', {
-//     email: 'admin@gmail.com',
-//     password: 'admin'
-//   })
-//   .then(function (response) {
-//     console.log(response.data);
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
+axios.post('https://nmcnpm.herokuapp.com/api/v1/admin/login', {
+    email: 'admin@gmail.com',
+    password: 'admin'
+  })
+  .then(function (response) {
+    console.log(response.data);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 
 // const xhr = new XMLHttpRequest();
 // xhr.open('POST', 'https://nmcnpm.herokuapp.com/api/v1/admin/login');
@@ -37,11 +37,9 @@
 //         return response.json(); 
 // }
 
-const api = `http://localhost:5000/api/v1/users`;
-let user = sessionStorage.getItem('data')
-const token = user;
-console.log(token);
+const api = `http://localhost:5000/api/v1/accounts?type=staff`;
+let token = sessionStorage.getItem('data')
 axios.get(api, { headers: {"Authorization" : `Bearer ${token}`} })
         .then(res => {
             console.log(res.data);
-        })
+})

@@ -139,8 +139,9 @@ const addAccount = async (req, res) => {
     }
     const { identifyNumber, userName, password, email, name, phoneNumber, address } = req.body;
     let user;
-    if(role!== 'staff'|| role !=='receptionist'){
-        return res.json({status:"fail",msg:"Role not found"})
+    const roles=["staff","receptionist"]
+    if(!roles.includes(role)){
+        return res.json({status:false,msg:'Role not found'})
     }
     if (role === 'staff') {
         user = await StaffStation.findOne({ email: email });
@@ -185,8 +186,9 @@ const editAccount = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(422).json({ msg: 'Invalid input, please check your data' })
     }
-    if(role!== 'staff'|| role !=='receptionist'){
-        return res.json({status:"fail",msg:"Role not found"})
+    const roles=["staff","receptionist"]
+    if(!roles.includes(role)){
+        return res.json({status:false,msg:'Role not found'})
     }
     try {
         if (role === 'staff') {
@@ -220,8 +222,9 @@ const deleteAccount = async (req, res) => {
     if (!errors.isEmpty()) {
         res.status(422).json({ msg: 'Invalid input, please check your data' })
     }
-    if(role!== 'staff'|| role !=='receptionist'){
-        return res.json({status:"fail",msg:"Role not found"})
+    const roles=["staff","receptionist"]
+    if(!roles.includes(role)){
+        return res.json({status:false,msg:'Role not found'})
     }
     if (role === 'staff') {
         try {
@@ -260,8 +263,9 @@ const getAccount = async (req, res) => {
     }
     const role = req.query.type;
     console.log(role);
-    if(role!== 'staff'|| role !=='receptionist'){
-        return res.json({status:"fail",msg:"Role not found"})
+    const roles=["staff","receptionist"]
+    if(!roles.includes(role)){
+        return res.json({status:false,msg:'Role not found'})
     }
     if (role === 'receptionist') {
         Receptionist.find({}, (err, doc) => {
@@ -279,6 +283,8 @@ const getAccount = async (req, res) => {
             return res.json({ status: "success", data: doc })
         })
     }
+
+    // return res.json({status:false,msg:'role not found'})
 }
 
 const getDetailAccount = async (req, res) => {
@@ -289,8 +295,9 @@ const getDetailAccount = async (req, res) => {
     const role = req.query.type.split('/')[0];
     const id = req.query.type.split('/')[1]
     console.log(role, id)
-    if(role!== 'staff'|| role !=='receptionist'){
-        return res.json({status:"fail",msg:"Role not found"})
+    const roles=["staff","receptionist"]
+    if(!roles.includes(role)){
+        return res.json({status:false,msg:'Role not found'})
     }
     if (role === 'receptionist') {
         try {
