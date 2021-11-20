@@ -1,9 +1,10 @@
 const { Receptionist, StaffStation, Admin, User } = require('../model/user');
-const Token = require('../model/token')
+const { Token } = require('../model/token')
 const { createJwtToken } = require("../util/auth")
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
-const SendEmail = require('../util/sendEmail')
+const SendEmail = require('../util/sendEmail');
+const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 // register - dang ky tai khoan
@@ -22,7 +23,7 @@ const register = async (req, res) => {
         res.status(500).send({ msg: 'Server Error' })
     }
     if (user) {
-        return res.status(200).json({status:'fail', msg: 'User already exists, please login instead.' })
+        return res.status(200).json({ status: 'fail', msg: 'User already exists, please login instead.' })
     }
     let hashedPassword;
     try {
@@ -44,7 +45,7 @@ const register = async (req, res) => {
     }
 
     user = new User({
-        identifyNumber, password: hashedPassword, email, phoneNumber, name, balance:0, residentID, activate: "false", role: "user"
+        identifyNumber, password: hashedPassword, email, phoneNumber, name, balance: 0, residentID, activate: "false", role: "user"
     })
     try {
         await user.save().then(doc => {
@@ -71,7 +72,7 @@ const login = async (req, res, next) => {
         console.log(err)
     }
     if (!user) {
-        return res.status(200).json({status:'fail',msg: 'Email not found' })
+        return res.status(200).json({ status: 'fail', msg: 'Email not found' })
     }
 
     let check = false;
@@ -79,7 +80,7 @@ const login = async (req, res, next) => {
         check = await bcrypt.compare(password, user.password);
     } catch (err) {
         console.errors(err.message);
-        res.status(200).send({status:'fail',msg: 'Server Error' });
+        res.status(200).send({ status: 'fail', msg: 'Server Error' });
     }
     if (!check) {
         return res.json({ status: 'fail', msg: 'Password is not match' });
@@ -98,18 +99,38 @@ const adminLogin = async (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
-    const { email, password } = req.body;
-    Admin.findOne({ email: email },  (err, doc) => {
-        if (err) {
-            return res.json({ stauts: 'fail', msg: 'server error' })
-        } else if (!doc) {
-            return res.json({ status: 'fail', msg: 'Can not find that email !' })
+    if (!req.headers.authorization) {
+        const { email, password } = req.body;
+        Admin.findOne({ email: email }, (err, doc) => {
+            if (err) {
+                return res.json({ stauts: 'fail', msg: 'server error' })
+            } else if (!doc) {
+                return res.json({ status: 'fail', msg: 'Can not find that email !' })
+            }
+            else if (password !== doc.password) {
+                return res.json({ status: 'fail', msg: 'Password is not match!' })
+            }
+            let tokenn = createJwtToken(doc._id);
+            return res.json({ status: "success", token: tokenn });
+        })
+    } else {
+        console.log("admin headers: "+req.headers.authorization);
+        const token = req.headers.authorization.split(' ')[1];
+        if (token) {
+            jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+                if (err) {
+                    return res.json({status:'fail', msg: "Invalid token" })
+                }
+                Admin.findOne({ _id: decodedToken.userID }, (err, doc) => {
+                    if (err) {
+                        return res.json({ status: 'fail', msg: 'server error' })
+                    } else if (doc) {
+                        return res.json({ status: 'success', msg: "login successfully!",token:token})
+                    }
+                })
+            });
         }
-        else if (password !== doc.password) {
-            return res.json({ status: 'fail', msg: 'Password is not match!' })
-        }
-        return res.json({ status: "success", token: createJwtToken(doc._id) });
-    })
+    }
 }
 
 /**chuc nang cua admin
@@ -119,15 +140,15 @@ const adminLogin = async (req, res, next) => {
  * + edit account (staff || receptionist)
  * + delete account 
  * */
-const changePass= async(req,res)=>{
-    try{
-        await Admin.findOneAndUpdate({password:req.body.password},{password:req.body.newpass},{new:true}).then(doc=>{
-            if(!doc){
-                return res.json({status:false,msg:'Password is not found!'})
+const changePass = async (req, res) => {
+    try {
+        await Admin.findOneAndUpdate({ password: req.body.password }, { password: req.body.newpass }, { new: true }).then(doc => {
+            if (!doc) {
+                return res.json({ status: false, msg: 'Password is not found!' })
             }
-            return res.json({status:true,msg:'Update new password successfully!'})
+            return res.json({ status: true, msg: 'Update new password successfully!' })
         })
-    }catch(err){
+    } catch (err) {
 
     }
 }
@@ -139,9 +160,9 @@ const addAccount = async (req, res) => {
     }
     const { identifyNumber, userName, password, email, name, phoneNumber, address } = req.body;
     let user;
-    const roles=["staff","receptionist"]
-    if(!roles.includes(role)){
-        return res.json({status:false,msg:'Role not found'})
+    const roles = ["staff", "receptionist"]
+    if (!roles.includes(role)) {
+        return res.json({ status: false, msg: 'Role not found' })
     }
     if (role === 'staff') {
         user = await StaffStation.findOne({ email: email });
@@ -186,9 +207,9 @@ const editAccount = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
-    const roles=["staff","receptionist"]
-    if(!roles.includes(role)){
-        return res.json({status:false,msg:'Role not found'})
+    const roles = ["staff", "receptionist"]
+    if (!roles.includes(role)) {
+        return res.json({ status: false, msg: 'Role not found' })
     }
     try {
         if (role === 'staff') {
@@ -222,9 +243,9 @@ const deleteAccount = async (req, res) => {
     if (!errors.isEmpty()) {
         res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
-    const roles=["staff","receptionist"]
-    if(!roles.includes(role)){
-        return res.json({status:false,msg:'Role not found'})
+    const roles = ["staff", "receptionist"]
+    if (!roles.includes(role)) {
+        return res.json({ status: false, msg: 'Role not found' })
     }
     if (role === 'staff') {
         try {
@@ -263,9 +284,9 @@ const getAccount = async (req, res) => {
     }
     const role = req.query.type;
     console.log(role);
-    const roles=["staff","receptionist"]
-    if(!roles.includes(role)){
-        return res.json({status:false,msg:'Role not found'})
+    const roles = ["staff", "receptionist"]
+    if (!roles.includes(role)) {
+        return res.json({ status: false, msg: 'Role not found' })
     }
     if (role === 'receptionist') {
         Receptionist.find({}, (err, doc) => {
@@ -295,9 +316,9 @@ const getDetailAccount = async (req, res) => {
     const role = req.query.type.split('/')[0];
     const id = req.query.type.split('/')[1]
     console.log(role, id)
-    const roles=["staff","receptionist"]
-    if(!roles.includes(role)){
-        return res.json({status:false,msg:'Role not found'})
+    const roles = ["staff", "receptionist"]
+    if (!roles.includes(role)) {
+        return res.json({ status: false, msg: 'Role not found' })
     }
     if (role === 'receptionist') {
         try {
@@ -363,10 +384,10 @@ const forgetPass = async (req, res) => {
         return res.status(200).json({ status: 'fail', msg: 'Email not found' });
     const n = crypto.randomInt(100000, 999999);
     console.log(n);
-    const newpass= await bcrypt.hash(n.toString(),12);
+    const newpass = await bcrypt.hash(n.toString(), 12);
     // const link = `http://locahost:5000/api/v1/password-reset/${user._id}/${data.token}`
     await SendEmail(user.email, "Your new password", n);
-    await User.findOneAndUpdate({ email: user.email },{password:newpass},{ new: true }).then(doc => {
+    await User.findOneAndUpdate({ email: user.email }, { password: newpass }, { new: true }).then(doc => {
         res.json({ status: true, msg: 'Check your email to receive new password' })
     })
 }
@@ -475,7 +496,7 @@ const staffLogin = async (req, res) => {
     return res.json({ msg: "login successfully", token: token });
 }
 
-exports.changePass= changePass;
+exports.changePass = changePass;
 exports.forgetPass = forgetPass;
 exports.searchAccount = searchAccount;
 exports.staffLogin = staffLogin;
