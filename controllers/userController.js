@@ -99,8 +99,8 @@ const adminLogin = async (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
+    console.log("****"+req.headers.authorization);
     if (!req.headers.authorization) {
-        console.log("ko co token");
         const { email, password } = req.body;
         Admin.findOne({ email: email }, (err, doc) => {
             if (err) {
