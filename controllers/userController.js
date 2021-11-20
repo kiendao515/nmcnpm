@@ -360,7 +360,7 @@ const forgetPass = async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     console.log(user)
     if (!user)
-        return res.status(400).json({ status: 'fail', msg: 'Email not found' });
+        return res.status(200).json({ status: 'fail', msg: 'Email not found' });
     const n = crypto.randomInt(100000, 999999);
     console.log(n);
     const newpass= await bcrypt.hash(n.toString(),12);
