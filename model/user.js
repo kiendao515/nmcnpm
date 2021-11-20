@@ -3,11 +3,9 @@ const mongoose = require('mongoose');
 //basic info
 const basicInfo= new mongoose.Schema({
     identifyNumber:{type:String,required:true},
-    userName:{type:String,required:true},
     password:{type:String,required:true},
     email:{type:String,required:true},
     phoneNumber:{type:String,required:true},
-    address:{type:String,required:true},
     name:{type:String,required:true}
 })
 

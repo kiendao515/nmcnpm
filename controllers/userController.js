@@ -44,7 +44,7 @@ const register = async (req, res) => {
     }
 
     user = new User({
-        identifyNumber, userName:"", password: hashedPassword, email, phoneNumber, address:"", name, balance:0, residentID, activate: "false", role: "user"
+        identifyNumber, password: hashedPassword, email, phoneNumber, name, balance:0, residentID, activate: "false", role: "user"
     })
     try {
         await user.save().then(doc => {
