@@ -101,20 +101,23 @@ const adminLogin = async (req, res, next) => {
     }
     if (!req.headers.authorization) {
         const { email, password } = req.body;
-        Admin.findOne({ email: email }, (err, doc) => {
-            if (err) {
-                return res.json({ stauts: 'fail', msg: 'server error' })
-            } else if (!doc) {
-                return res.json({ status: 'fail', msg: 'Can not find that email !' })
-            }
-            else if (password !== doc.password) {
-                return res.json({ status: 'fail', msg: 'Password is not match!' })
-            }
-            let tokenn = createJwtToken(doc._id);
-            return res.json({ status: "success", token: tokenn });
-        })
-    } else {
-        console.log("admin headers: "+req.headers.authorization);
+        if(!email){
+            return res.json({status:'fail',msg:'Email is empty!'})
+        }else {
+            Admin.findOne({ email: email }, (err, doc) => {
+                if (err) {
+                    return res.json({ stauts: 'fail', msg: 'server error' })
+                } else if (!doc) {
+                    return res.json({ status: 'fail', msg: 'Can not find that email !' })
+                }
+                else if (password !== doc.password) {
+                    return res.json({ status: 'fail', msg: 'Password is not match!' })
+                }
+                let tokenn = createJwtToken(doc._id);
+                return res.json({ status: "success", token: tokenn });
+            })
+        }
+    } else{
         const token = req.headers.authorization.split(' ')[1];
         if (token) {
             jwt.verify(token, "kiendao2001", function (err, decodedToken) {
