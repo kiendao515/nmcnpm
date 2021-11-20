@@ -22,7 +22,7 @@ const register = async (req, res) => {
         res.status(500).send({ msg: 'Server Error' })
     }
     if (user) {
-        return res.status(200).json({ msg: 'User already exists, please login instead.' })
+        return res.status(200).json({status:'fail', msg: 'User already exists, please login instead.' })
     }
     let hashedPassword;
     try {
