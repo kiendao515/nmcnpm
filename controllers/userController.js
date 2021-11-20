@@ -12,7 +12,7 @@ const register = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
-    const { identifyNumber, userName, password, email, phoneNumber, address, name, residentID } = req.body;
+    const { identifyNumber, password, email, phoneNumber, name, residentID } = req.body;
     let user;
     let users;
     try {
