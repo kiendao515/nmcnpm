@@ -100,23 +100,20 @@ const adminLogin = async (req, res, next) => {
         return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
     if (!req.headers.authorization) {
+        console.log("ko co token");
         const { email, password } = req.body;
-        if(!email){
-            return res.json({status:'fail',msg:'Email is empty!'})
-        }else {
-            Admin.findOne({ email: email }, (err, doc) => {
-                if (err) {
-                    return res.json({ stauts: 'fail', msg: 'server error' })
-                } else if (!doc) {
-                    return res.json({ status: 'fail', msg: 'Can not find that email !' })
-                }
-                else if (password !== doc.password) {
-                    return res.json({ status: 'fail', msg: 'Password is not match!' })
-                }
-                let tokenn = createJwtToken(doc._id);
-                return res.json({ status: "success", token: tokenn });
-            })
-        }
+        Admin.findOne({ email: email }, (err, doc) => {
+            if (err) {
+                return res.json({ stauts: 'fail', msg: 'server error' })
+            } else if (!doc) {
+                return res.json({ status: 'fail', msg: 'Can not find that email !' })
+            }
+            else if (password !== doc.password) {
+                return res.json({ status: 'fail', msg: 'Password is not match!' })
+            }
+            let tokenn = createJwtToken(doc._id);
+            return res.json({ status: "success", token: tokenn });
+        })
     } else{
         const token = req.headers.authorization.split(' ')[1];
         if (token) {
