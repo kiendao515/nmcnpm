@@ -71,7 +71,7 @@ const login = async (req, res, next) => {
         console.log(err)
     }
     if (!user) {
-        return res.status(403).json({ msg: 'Email not found' })
+        return res.status(200).json({status:'fail',msg: 'Email not found' })
     }
 
     let check = false;
@@ -79,7 +79,7 @@ const login = async (req, res, next) => {
         check = await bcrypt.compare(password, user.password);
     } catch (err) {
         console.errors(err.message);
-        res.status(500).send({ msg: 'Server Error' });
+        res.status(200).send({status:'fail',msg: 'Server Error' });
     }
     if (!check) {
         return res.json({ status: 'fail', msg: 'Password is not match' });
