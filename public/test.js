@@ -37,7 +37,7 @@
 //         return response.json(); 
 // }
 
-const api = `http://localhost:5000/api/v1/accounts/add?type=staff`;
+const api = `https://nmcnpm.herokuapp.com/api/v1/accounts/add?type=staff`;
 let token = localStorage.getItem('data')
 console.log(token)
 axios.post(api,{email:"daotrungkien@"}, { headers: {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiO…IyNX0.xabuV_fyRvQAx7N2uN3ir9iZ6HKiYXcgSmeodbsCywI"} })

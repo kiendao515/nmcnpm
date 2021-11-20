@@ -12,7 +12,7 @@ const register = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
-    const { identifyNumber, userName, password, email, phoneNumber, address, name, balance, residentID } = req.body;
+    const { identifyNumber, userName, password, email, phoneNumber, address, name, residentID } = req.body;
     let user;
     let users;
     try {
@@ -44,7 +44,7 @@ const register = async (req, res) => {
     }
 
     user = new User({
-        identifyNumber, userName, password: hashedPassword, email, phoneNumber, address, name, balance, residentID, activate: "false", role: "user"
+        identifyNumber, userName, password: hashedPassword, email, phoneNumber, address, name, balance:0, residentID, activate: "false", role: "user"
     })
     try {
         await user.save().then(doc => {
