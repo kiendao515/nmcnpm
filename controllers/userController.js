@@ -111,7 +111,7 @@ const adminLogin = async (req, res, next) => {
                 return res.json({ status: 'fail', msg: 'Password is not match!' })
             }
             let tokenn = createJwtToken(doc._id);
-            return res.json({ status: "success", token: tokenn });
+            return res.json({ status: "success", token: tokenn,data:doc});
         })
     } else {
         const token = req.headers.authorization.split(' ')[1];
