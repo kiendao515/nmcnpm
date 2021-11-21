@@ -184,9 +184,9 @@ const addAccount = async (req, res) => {
         let phoneNumberArray= staffs.map(data=>data.phoneNumber);
         let identityNumberArray= staffs.map(data=>data.identifyNumber)
         if(phoneNumberArray.includes(phoneNumber)){
-            return res.status(200).json({ status: 'fail', msg: 'Telephone number existed!' })
+            return res.status(200).json({ status: 'fail', msg: 'Telephone Number Existed!' })
         }else if(identityNumberArray.includes(identifyNumber)){
-            return res.status(200).json({status:'fail',msg:'Identity number existed!'})
+            return res.status(200).json({status:'fail',msg:'Identity Number Existed!'})
         }
         user = new StaffStation({
             identifyNumber, userName, password: hashedPassword, email, phoneNumber, address, name, staffID: Date.now(), role: "staff"
@@ -196,9 +196,9 @@ const addAccount = async (req, res) => {
         let phoneNumberArray= staffs.map(data=>data.phoneNumber);
         let identityNumberArray= staffs.map(data=>data.identifyNumber)
         if(phoneNumberArray.includes(phoneNumber)){
-            return res.status(200).json({ status: 'fail', msg: 'Indentity number existed!' })
+            return res.status(200).json({ status: 'fail', msg: 'Phone Number Existed!' })
         }else if(identityNumberArray.includes(identifyNumber)){
-            return res.status(200).json({status:'fail',msg:'Telephone number existed!'})
+            return res.status(200).json({status:'fail',msg:'Identity Number existed!'})
         }
         user = new Receptionist({
             identifyNumber, userName, password: hashedPassword, email, phoneNumber, address, name, receptionistID: Date.now(), role: "receptionist"
