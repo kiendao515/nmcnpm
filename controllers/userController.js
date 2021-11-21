@@ -180,10 +180,26 @@ const addAccount = async (req, res) => {
         res.status(500).send({ msg: 'Server Error' });
     }
     if (role === "staff") {
+        let staffs=await StaffStation.find({});
+        let phoneNumberArray= staffs.map(data=>data.phoneNumber);
+        let identityNumberArray= staffs.map(data=>data.identifyNumber)
+        if(phoneNumberArray.includes(phoneNumber)){
+            return res.status(200).json({ status: 'fail', msg: 'Indentity number existed!' })
+        }else if(identityNumberArray.includes(identifyNumber)){
+            return res.status(200).json({status:'fail',msg:'Telephone number existed!'})
+        }
         user = new StaffStation({
             identifyNumber, userName, password: hashedPassword, email, phoneNumber, address, name, staffID: Date.now(), role: "staff"
         })
     } else if (role === "receptionist") {
+        let staffs=await Receptionist.find({});
+        let phoneNumberArray= staffs.map(data=>data.phoneNumber);
+        let identityNumberArray= staffs.map(data=>data.identifyNumber)
+        if(phoneNumberArray.includes(phoneNumber)){
+            return res.status(200).json({ status: 'fail', msg: 'Indentity number existed!' })
+        }else if(identityNumberArray.includes(identifyNumber)){
+            return res.status(200).json({status:'fail',msg:'Telephone number existed!'})
+        }
         user = new Receptionist({
             identifyNumber, userName, password: hashedPassword, email, phoneNumber, address, name, receptionistID: Date.now(), role: "receptionist"
         })
