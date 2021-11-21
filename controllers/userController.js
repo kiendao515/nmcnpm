@@ -124,7 +124,7 @@ const adminLogin = async (req, res, next) => {
                     if (err) {
                         return res.json({ status: 'fail', msg: 'server error' })
                     } else if (doc) {
-                        return res.json({ status: 'success', msg: "login successfully!", token: token })
+                        return res.json({ status: 'success', msg: "login successfully!", token: token ,data:doc})
                     }
                 })
             });
@@ -418,7 +418,7 @@ const receptionistLogin = async (req, res) => {
             }
 
             let tokenn = createJwtToken(doc._id);
-            return res.json({ status: "success", token: tokenn });
+            return res.json({ status: "success", token: tokenn,data:doc });
         })
     } else {
         const token = req.headers.authorization.split(' ')[1];
@@ -431,7 +431,7 @@ const receptionistLogin = async (req, res) => {
                     if (err) {
                         return res.json({ status: 'fail', msg: 'server error' })
                     } else if (doc) {
-                        return res.json({ status: 'success', msg: "login successfully!", token: token })
+                        return res.json({ status: 'success', msg: "login successfully!", token: token,data:doc })
                     }
                 })
             });
@@ -527,7 +527,7 @@ const staffLogin = async (req, res) => {
             }
 
             let tokenn = createJwtToken(doc._id);
-            return res.json({ status: "success", token: tokenn });
+            return res.json({ status: "success", token: tokenn,data:doc });
         })
     } else {
         const token = req.headers.authorization.split(' ')[1];
@@ -540,7 +540,7 @@ const staffLogin = async (req, res) => {
                     if (err) {
                         return res.json({ status: 'fail', msg: 'server error' })
                     } else if (doc) {
-                        return res.json({ status: 'success', msg: "login successfully!", token: token })
+                        return res.json({ status: 'success', msg: "login successfully!", token: token,data:doc })
                     }
                 })
             });
