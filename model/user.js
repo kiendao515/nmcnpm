@@ -28,12 +28,14 @@ const userSchema= extend(basicInfo,{
 
 // receptionist schema
 const receptionistSchema= extend(basicInfo,{
+    address:{type:String,required:true},
     receptionistID:{type:String,required:true},
     role:String
 })
 
 // station staff
 const stationStaffSchema= extend(basicInfo,{
+    address:{type:String,required:true},
     staffID:{
         type:String,
         required:true
