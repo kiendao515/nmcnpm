@@ -99,7 +99,6 @@ const adminLogin = async (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
-    console.log("****"+req.headers.authorization);
     if (!req.headers.authorization) {
         const { email, password } = req.body;
         Admin.findOne({ email: email }, (err, doc) => {
@@ -114,18 +113,18 @@ const adminLogin = async (req, res, next) => {
             let tokenn = createJwtToken(doc._id);
             return res.json({ status: "success", token: tokenn });
         })
-    } else{
+    } else {
         const token = req.headers.authorization.split(' ')[1];
         if (token) {
             jwt.verify(token, "kiendao2001", function (err, decodedToken) {
                 if (err) {
-                    return res.json({status:'fail', msg: "Invalid token" })
+                    return res.json({ status: 'fail', msg: "Invalid token" })
                 }
                 Admin.findOne({ _id: decodedToken.userID }, (err, doc) => {
                     if (err) {
                         return res.json({ status: 'fail', msg: 'server error' })
                     } else if (doc) {
-                        return res.json({ status: 'success', msg: "login successfully!",token:token})
+                        return res.json({ status: 'success', msg: "login successfully!", token: token })
                     }
                 })
             });
@@ -400,29 +399,67 @@ const forgetPass = async (req, res) => {
  * @returns 
  */
 const receptionistLogin = async (req, res) => {
-    const { email, password } = req.body;
-    console.log(email)
-    let admin;
-    try {
-        admin = await Receptionist.findOne({ email: email });
-    } catch (error) {
-        console.log(error)
+    if (!req.headers.authorization) {
+        const { email, password } = req.body;
+        Receptionist.findOne({ email: email }, (err, doc) => {
+            if (err) {
+                return res.json({ stauts: 'fail', msg: 'server error' })
+            } else if (!doc) {
+                return res.json({ status: 'fail', msg: 'Can not find that email !' })
+            }
+            let check = false;
+            try {
+                check = bcrypt.compare(password, doc.password);
+            } catch (err) {
+                console.log(err)
+            }
+            if (!check) {
+                return res.json({ status: 'fail', msg: 'Password is not match!' })
+            }
+
+            let tokenn = createJwtToken(doc._id);
+            return res.json({ status: "success", token: tokenn });
+        })
+    } else {
+        const token = req.headers.authorization.split(' ')[1];
+        if (token) {
+            jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+                if (err) {
+                    return res.json({ status: 'fail', msg: "Invalid token" })
+                }
+                Receptionist.findOne({ _id: decodedToken.userID }, (err, doc) => {
+                    if (err) {
+                        return res.json({ status: 'fail', msg: 'server error' })
+                    } else if (doc) {
+                        return res.json({ status: 'success', msg: "login successfully!", token: token })
+                    }
+                })
+            });
+        }
     }
-    if (!admin) {
-        return res.json({ status: 'fail', msg: 'email not found' })
-    }
-    let check = false;
-    try {
-        check = await bcrypt.compare(password, admin.password);
-    } catch (err) {
-        console.log(err)
-    }
-    if (!check) {
-        return res.json({ status: 'fail', msg: 'Password is not match!' })
-    }
-    const token = createJwtToken(admin._id)
-    res.cookie('token', token)
-    return res.json({ msg: "login successfully", token: token });
+    // const { email, password } = req.body;
+    // console.log(email)
+    // let admin;
+    // try {
+    //     admin = await Receptionist.findOne({ email: email });
+    // } catch (error) {
+    //     console.log(error)
+    // }
+    // if (!admin) {
+    //     return res.json({ status: 'fail', msg: 'email not found' })
+    // }
+    // let check = false;
+    // try {
+    //     check = await bcrypt.compare(password, admin.password);
+    // } catch (err) {
+    //     console.log(err)
+    // }
+    // if (!check) {
+    //     return res.json({ status: 'fail', msg: 'Password is not match!' })
+    // }
+    // const token = createJwtToken(admin._id)
+    // res.cookie('token', token)
+    // return res.json({ msg: "login successfully", token: token });
 }
 
 // getAllUser
@@ -471,29 +508,67 @@ const getUnactivatedAccount = async (req, res) => {
  * -đăng nhập, thêm xe 
  */
 const staffLogin = async (req, res) => {
-    const { email, password } = req.body;
-    console.log(email, password)
-    let admin;
-    try {
-        admin = await StaffStation.findOne({ email: email });
-    } catch (error) {
-        console.log(error)
+    if (!req.headers.authorization) {
+        const { email, password } = req.body;
+        StaffStation.findOne({ email: email }, (err, doc) => {
+            if (err) {
+                return res.json({ stauts: 'fail', msg: 'server error' })
+            } else if (!doc) {
+                return res.json({ status: 'fail', msg: 'Can not find that email !' })
+            }
+            let check = false;
+            try {
+                check = bcrypt.compare(password, doc.password);
+            } catch (err) {
+                console.log(err)
+            }
+            if (!check) {
+                return res.json({ status: 'fail', msg: 'Password is not match!' })
+            }
+
+            let tokenn = createJwtToken(doc._id);
+            return res.json({ status: "success", token: tokenn });
+        })
+    } else {
+        const token = req.headers.authorization.split(' ')[1];
+        if (token) {
+            jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+                if (err) {
+                    return res.json({ status: 'fail', msg: "Invalid token" })
+                }
+                StaffStation.findOne({ _id: decodedToken.userID }, (err, doc) => {
+                    if (err) {
+                        return res.json({ status: 'fail', msg: 'server error' })
+                    } else if (doc) {
+                        return res.json({ status: 'success', msg: "login successfully!", token: token })
+                    }
+                })
+            });
+        }
     }
-    if (!admin) {
-        return res.json({ status: 'fail', msg: 'email not found' })
-    }
-    let check = false;
-    try {
-        check = await bcrypt.compare(password, admin.password);
-    } catch (err) {
-        console.log(err)
-    }
-    if (!check) {
-        return res.json({ status: 'fail', msg: 'Password is not match!' })
-    }
-    const token = createJwtToken(admin._id)
-    res.cookie('token', token)
-    return res.json({ msg: "login successfully", token: token });
+    // const { email, password } = req.body;
+    // console.log(email, password)
+    // let admin;
+    // try {
+    //     admin = await StaffStation.findOne({ email: email });
+    // } catch (error) {
+    //     console.log(error)
+    // }
+    // if (!admin) {
+    //     return res.json({ status: 'fail', msg: 'email not found' })
+    // }
+    // let check = false;
+    // try {
+    //     check = await bcrypt.compare(password, admin.password);
+    // } catch (err) {
+    //     console.log(err)
+    // }
+    // if (!check) {
+    //     return res.json({ status: 'fail', msg: 'Password is not match!' })
+    // }
+    // const token = createJwtToken(admin._id)
+    // res.cookie('token', token)
+    // return res.json({ msg: "login successfully", token: token });
 }
 
 exports.changePass = changePass;
