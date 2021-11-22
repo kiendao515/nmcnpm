@@ -3,7 +3,6 @@ const cookieParser = require('cookie-parser');
 const jwt = require("jsonwebtoken");
 cookieParser();
 const checkAdminRole = async (req, res, next) => {
-  let admin;
   if (!req.headers.authorization) {
     return res.json({ msg: "Token required!" })
   }
@@ -15,16 +14,15 @@ const checkAdminRole = async (req, res, next) => {
     if(err){
       return res.json({msg:"Invalid token"})
     }
-    try {
-      admin = Admin.findOne({ _id: decodedToken.userID });
-    } catch (error) {
-      console.log(error);
-    }
-    if (!admin) {
-      return res.json({ msg: "Admin permission needed!" })
-    } else {
-      next();
-    }
+    console.log("admin "+decodedToken.userID);
+    Admin.findOne({ _id: decodedToken.userID},function(err,doc){
+        if(err){
+          return res.json({status:'fail',msg:'Server error!'})
+        }else if(!doc){
+          return res.json({status:'fail',msg:'Admin role needed!'})
+        }
+        next();
+    });
   });
 }
 module.exports = checkAdminRole;

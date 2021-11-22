@@ -9,5 +9,7 @@ const jwt = require("jsonwebtoken");
 /**
  * add category
  */
-// const addCategory= 
+const addCategory= async(req,res)=>{
+    const {}
+}
 

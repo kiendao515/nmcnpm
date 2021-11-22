@@ -224,7 +224,7 @@ const editAccount = async (req, res) => {
     }
     const roles = ["staff", "receptionist"]
     if (!roles.includes(role)) {
-        return res.json({ status: false, msg: 'Role not found' })
+        return res.json({ status: 'fail', msg: 'Role not found' })
     }
     try {
         if (role === 'staff') {
@@ -458,29 +458,6 @@ const receptionistLogin = async (req, res) => {
             });
         }
     }
-    // const { email, password } = req.body;
-    // console.log(email)
-    // let admin;
-    // try {
-    //     admin = await Receptionist.findOne({ email: email });
-    // } catch (error) {
-    //     console.log(error)
-    // }
-    // if (!admin) {
-    //     return res.json({ status: 'fail', msg: 'email not found' })
-    // }
-    // let check = false;
-    // try {
-    //     check = await bcrypt.compare(password, admin.password);
-    // } catch (err) {
-    //     console.log(err)
-    // }
-    // if (!check) {
-    //     return res.json({ status: 'fail', msg: 'Password is not match!' })
-    // }
-    // const token = createJwtToken(admin._id)
-    // res.cookie('token', token)
-    // return res.json({ msg: "login successfully", token: token });
 }
 
 // getAllUser
@@ -492,7 +469,7 @@ const getAllUser = async (req, res) => {
     try {
         await User.find({}, (err, doc) => {
             res.json(doc);
-        })
+        }).clone()
     } catch (error) {
         console.log(error);
     }
