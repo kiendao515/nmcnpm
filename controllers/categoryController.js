@@ -1,15 +1,13 @@
-// getAllCategory : lấy tất cả các danh mục xe
+const { Receptionist, StaffStation, Admin, User} = require('../model/user');
+const {Category}= require('../model/category')
+const { Token } = require('../model/token')
+const { createJwtToken } = require("../util/auth")
+const bcrypt = require('bcrypt');
+const { validationResult } = require('express-validator');
+const jwt = require("jsonwebtoken");
 
-
-// getCategoryByID : lấy danh mục xe theo id 
-
-
-//addCategory: thêm danh mục xe 
-
-
-//editCategory: sửa danh mục xe
-
-
-// deleteCategory: xóa danh mục xe 
-
+/**
+ * add category
+ */
+// const addCategory= 
 

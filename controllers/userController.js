@@ -123,7 +123,7 @@ const adminLogin = async (req, res, next) => {
                 Admin.findOne({ _id: decodedToken.userID }, (err, doc) => {
                     if (err) {
                         return res.json({ status: 'fail', msg: 'server error' })
-                    } else if (doc) {
+                    } else if (doc){
                         return res.json({ status: 'success', msg: "login successfully!", token: token ,data:doc})
                     }
                 })
@@ -372,16 +372,18 @@ const searchAccount = async (req, res) => {
         return res.status(200).json({ msg: 'Invalid input, please check your data' })
     }
     const q = req.query.q
+    console.log(q);
     if (!q) {
         return res.json({ status: 'fail', msg: 'Bad request!' })
     }
     try {
         staff = StaffStation.find({ $or: [{ userName: q }, { phoneNumber: q }, { email: q }] }, (err, doc) => {
             staff = doc;
+            console.log(staff);
         })
         receptionist = Receptionist.find({ $or: [{ userName: q }, { phoneNumber: q }, { email: q }] })
         console.log(staff.toJson({ getters: true, virtuals: false }), receptionist.toObject({ getters: true, virtuals: false }))
-        return res.json({ status: 'fail', staff: staff, receptionist: receptionist })
+        return res.json({ status: 'success', staff: staff, receptionist: receptionist })
     } catch (error) {
 
     }
@@ -417,25 +419,28 @@ const forgetPass = async (req, res) => {
 const receptionistLogin = async (req, res) => {
     if (!req.headers.authorization) {
         const { email, password } = req.body;
-        Receptionist.findOne({ email: email }, (err, doc) => {
-            if (err) {
-                return res.json({ stauts: 'fail', msg: 'server error' })
-            } else if (!doc) {
-                return res.json({ status: 'fail', msg: 'Can not find that email !' })
-            }
-            let check = false;
-            try {
-                check = bcrypt.compare(password, doc.password);
-            } catch (err) {
-                console.log(err)
-            }
-            if (!check) {
-                return res.json({ status: 'fail', msg: 'Password is not match!' })
-            }
+        console.log(email)
+        let admin;
+        try {
+            admin = await Receptionist.findOne({ email: email });
+        } catch (error) {
+            console.log(error)
+        }
+        if (!admin) {
+            return res.json({ status: 'fail', msg: 'email not found' })
+        }
+        let check = false;
+        try {
+            check = await bcrypt.compare(password, admin.password);
+        } catch (err) {
+            console.log(err)
+        }
+        if (!check) {
+            return res.json({ status: 'fail', msg: 'Password is not match!' })
+        }
+        const token = createJwtToken(admin._id)
+        return res.json({status:'success',msg: "login successfully", token: token,data:admin});
 
-            let tokenn = createJwtToken(doc._id);
-            return res.json({ status: "success", token: tokenn,data:doc });
-        })
     } else {
         const token = req.headers.authorization.split(' ')[1];
         if (token) {
@@ -526,25 +531,26 @@ const getUnactivatedAccount = async (req, res) => {
 const staffLogin = async (req, res) => {
     if (!req.headers.authorization) {
         const { email, password } = req.body;
-        StaffStation.findOne({ email: email }, (err, doc) => {
-            if (err) {
-                return res.json({ stauts: 'fail', msg: 'server error' })
-            } else if (!doc) {
-                return res.json({ status: 'fail', msg: 'Can not find that email !' })
-            }
-            let check = false;
-            try {
-                check = bcrypt.compare(password, doc.password);
-            } catch (err) {
-                console.log(err)
-            }
-            if (!check) {
-                return res.json({ status: 'fail', msg: 'Password is not match!' })
-            }
-
-            let tokenn = createJwtToken(doc._id);
-            return res.json({ status: "success", token: tokenn,data:doc });
-        })
+        let staff;
+        try {
+            staff = await StaffStation.findOne({ email: email });
+        } catch (error) {
+            console.log(error)
+        }
+        if (!staff) {
+            return res.json({ status: 'fail', msg: 'email not found' })
+        }
+        let check = false;
+        try {
+            check = await bcrypt.compare(password, staff.password);
+        } catch (err) {
+            console.log(err)
+        }
+        if (!check) {
+            return res.json({ status: 'fail', msg: 'Password is not match!' })
+        }
+        const token = createJwtToken(staff._id)
+        return res.json({status:'success',msg: "login successfully", token: token,data:staff});
     } else {
         const token = req.headers.authorization.split(' ')[1];
         if (token) {
