@@ -1,14 +1,18 @@
-const mongoose = require('mongoose');
-var Int32 = require('mongoose-int32');
+const mongoose = require("mongoose");
+/**
+ * const Int32 = require("mongoose-int32").loadType(mongoose);
+ */  
 const stationSchema= new mongoose.Schema({
-    bikeAmount:{type:Int32,required:true},
+    bikeAmount:{type:Number,required:true},
     staff: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "stationStaff"
+        ref: 'staff',
+        required:true
     },
     location:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "location"
+        ref: 'location',
+        required:true 
     }
 })
 const Station= mongoose.model('station',stationSchema);

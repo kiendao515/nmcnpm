@@ -54,7 +54,7 @@ const adminSchema= extend(basicInfo,{
 
 const User= mongoose.model('users',userSchema);
 const Receptionist= mongoose.model('receptionist',receptionistSchema);
-const StaffStation= mongoose.model('stationStaff',stationStaffSchema);
+const StaffStation= mongoose.model('staff',stationStaffSchema);
 const Admin= mongoose.model('admin',adminSchema);
 module.exports= {User,Receptionist,StaffStation,Admin};
 

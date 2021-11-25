@@ -8,8 +8,29 @@ const jwt = require("jsonwebtoken");
 
 /**
  * add category
+ * get category 
  */
 const addCategory= async(req,res)=>{
-    const {}
+    const {cost,image,description,name}= req.body;
+    let category= new Category({cost,image,description,name});
+    Category.findOne({name:name},function(err,doc){
+        if(err){
+            return res.json({status:'fail',msg:'server error'})
+        }else if(doc){
+            return res.json({status:'fail',msg:'Tên danh mục đã tồn tại!'})
+        }
+    })
+    await category.save().then(doc=>{
+        res.json({status:'success',data:doc})
+    })
 }
+
+const getCategory = async(req,res)=>{
+    Category.find({},(err,doc)=>{
+        return res.json({status:'successs',data:doc})
+    })
+}
+
+exports.addCategory= addCategory;
+exports.getCategory= getCategory;
 
