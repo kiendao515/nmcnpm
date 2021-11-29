@@ -90,7 +90,35 @@ const login = async (req, res, next) => {
     }
     const token = createJwtToken(user._id)
     res.cookie('token', token)
-    return res.json({ status: 'success', msg: 'login successfully' })
+    return res.json({ status: 'success', msg: 'login successfully' ,data:user})
+}
+
+//change password tài khoản thường
+const normalUserChangePass= async(req,res)=>{
+    const userID= req.params.id;
+    let user= await User.findOne({_id:userID});
+    if(!user){
+        return res.json({status:'fail',msg:'user not found!'})
+    }
+    const {oldPassword,newPassword}= req.body;
+    if(oldPassword&&newPassword){
+        let check = false;
+        try {
+            check = await bcrypt.compare(oldPassword, user.password);
+        } catch (err) {
+            console.errors(err.message);
+            res.status(200).send({ status: 'fail', msg: 'Server Error' });
+        }
+        if (!check) {
+            return res.json({ status: 'fail', msg: 'Old password is not match' });
+        }else{
+            let hashedPassword = await bcrypt.hash(newPassword, 12);
+            User.findOneAndUpdate({_id:userID},{password:hashedPassword},{new:true},(err,doc)=>{
+                return res.json({status:'success',msg:'password has changed',info:doc})
+            })
+        }
+
+    }
 }
 
 // login - dang nhap tai khoan admin
@@ -586,3 +614,4 @@ exports.receptionistLogin = receptionistLogin;
 exports.activate = activate;
 exports.getUnactivatedAccount = getUnactivatedAccount;
 exports.getDetailAccount = getDetailAccount;
+exports.normalUserChangePass= normalUserChangePass;

@@ -37,19 +37,17 @@
 //         return response.json(); 
 // }
 
-// const api = `https://nmcnpm.herokuapp.com/api/v1/accounts/add?type=staff`;
-// let token = localStorage.getItem('data')
-// console.log(token)
-// axios.post(api,{email:"daotrungkien@"}, { headers: {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiO…IyNX0.xabuV_fyRvQAx7N2uN3ir9iZ6HKiYXcgSmeodbsCywI"} })
-//         .then(res => {
-//             console.log(res.data);
-// })
-
-axios.post('https://nmcnpm.herokuapp.com/api/v1/user/login', {
-    password: "kiendao",
-    email:"kiend9814@gmail.com",
-}).then((response) => {
-    console.log(response)
-}).catch((error) => {
-    console.log(error)
+const api = `https://nmcnpm.herokuapp.com/api/v2/bikes/free/619e7bc033bbc513096ead10`;
+axios.get(api,{ headers: {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2MTcyZGQ2OTNlMDliMWEwOGFmZDk4NDEiLCJpYXQiOjE2MzgxNDc4MzMsImV4cCI6MTYzODE1MTQzM30.-Y_I0R-N4ad4Ce_GeHpoTD0Vbrcrhz02WmV7_Mfez8c"} })
+        .then(res => {
+            console.log(res.data);
 })
+
+// axios.post('https://nmcnpm.herokuapp.com/api/v1/user/login', {
+//     password: "kiendao",
+//     email:"kiend9814@gmail.com",
+// }).then((response) => {
+//     console.log(response)
+// }).catch((error) => {
+//     console.log(error)
+// })
