@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
  * const Int32 = require("mongoose-int32").loadType(mongoose);
  */  
 const stationSchema= new mongoose.Schema({
-    bikeAmount:{type:Number,required:true},
     staff: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'staff',
@@ -15,6 +14,10 @@ const stationSchema= new mongoose.Schema({
         required:true 
     },
     name:{
+        type:String,
+        required:true
+    },
+    name_lower:{
         type:String,
         required:true
     },

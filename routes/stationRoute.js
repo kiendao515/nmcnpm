@@ -5,4 +5,6 @@ const router= express.Router();
 
 router.post('/api/v2/station/add',checkAdminRole,stationController.addStation);
 router.get('/api/v2/station',checkAdminRole,stationController.getStation);
+router.get('/api/v2/station/:id',checkAdminRole,stationController.detailStation)
+router.get('/api/v2/search/station',checkAdminRole,stationController.searchStationByName);
 module.exports= router;
