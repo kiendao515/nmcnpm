@@ -1,22 +1,23 @@
 const {Station}= require('../model/station')
 const {StaffStation}= require('../model/user')
 const {Location}= require('../model/location')
-const mongoose = require('mongoose')
 
 const addStation= async(req,res)=>{
-    const {bikeAmount,staff,location}= req.body;
-    let staff1=await StaffStation.findOne({_id:staff});
-    if(!staff1){
-        return res.json({status:'fail',msg:'staff not found!'})
+    const {bikeAmount,staff,location,phoneNumber,name}= req.body;
+    let staff1=await Station.findOne({staff:staff});
+    if(staff1){
+        return res.json({status:'fail',msg:'This staff has already been in another station'})
     }
-    let location1 =await Location.findOne({_id:location})
-    if(!location1){
-        return res.json({status:'fail',msg:'Location not found!'})
+    let location1 =await Station.findOne({location:location})
+    if(location1){
+        return res.json({status:'fail',msg:'This location has already been for another station'})
     }
-    let station = new Station({bikeAmount:bikeAmount,staff:staff1._id,location:location1._id});
-    await station.save().then(doc=>{
+    if(!staff1 && !location1){
+        let station = new Station({bikeAmount,staff,location,name,phoneNumber});
+        await station.save().then(doc=>{
         res.json({status:'success',data:doc})
     })
+    }
 }
 
 const getStation = async(req,res)=>{
@@ -24,6 +25,8 @@ const getStation = async(req,res)=>{
         res.json({status:'success',data:doc})
     })
 }
+
+
 
 exports.addStation= addStation;
 exports.getStation= getStation;

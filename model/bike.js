@@ -11,6 +11,15 @@ const bikeSchema= new mongoose.Schema({
     status:{
         type:String,
         required:true
+    },
+    numberPlate:{
+        type:String,
+        required:true
+    },
+    isDelete:{
+        type:Boolean,
+        required:true,
+        default:"false"
     }
 })
 

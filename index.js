@@ -4,6 +4,7 @@ const userRoute= require('./routes/userRoute');
 const categoryRoute= require('./routes/categoryRoute')
 const locationRoute= require('./routes/locationRoute')
 const stationRoute= require('./routes/stationRoute')
+const bikeRoute= require('./routes/bikeRoute')
 var cors = require('cors');
 const app = express();
 connectionDB();
@@ -39,6 +40,10 @@ app.use(locationRoute,function(req,res,next){
 })
 
 app.use(stationRoute,function(req,res,next){
+    next();
+})
+
+app.use(bikeRoute,function(req,res,next){
     next();
 })
 app.all('*',(req,res)=>{

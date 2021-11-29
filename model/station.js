@@ -13,6 +13,19 @@ const stationSchema= new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'location',
         required:true 
+    },
+    name:{
+        type:String,
+        required:true
+    },
+    phoneNumber:{
+        type:String,
+        required:true
+    },
+    isDelete:{
+        type:Boolean,
+        required:true,
+        default:"false"
     }
 })
 const Station= mongoose.model('station',stationSchema);
