@@ -37,11 +37,18 @@
 //         return response.json(); 
 // }
 
-const api = `https://nmcnpm.herokuapp.com/api/v2/bikes/free/619e7bc033bbc513096ead10`;
-axios.get(api,{ headers: {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2MTcyZGQ2OTNlMDliMWEwOGFmZDk4NDEiLCJpYXQiOjE2MzgxNDc4MzMsImV4cCI6MTYzODE1MTQzM30.-Y_I0R-N4ad4Ce_GeHpoTD0Vbrcrhz02WmV7_Mfez8c"} })
-        .then(res => {
-            console.log(res.data);
-})
+const api = `https://nmcnpm.herokuapp.com/api/v2/station/add`;
+axios.post(api,
+    {
+        staff:"staffid...",
+        location:"locationid...",
+        phoneNumber:"....",
+        name:"tên bốt..."
+    },
+    { 
+        headers: 
+        {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2MTcyZGQ2OTNlMDliMWEwOGFmZDk4NDEiLCJpYXQiOjE2MzgyNDEzMjIsImV4cCI6MTYzODI0NDkyMn0.t7Q7ReysYLhhZZyyumuFHWX2LOqlbEmXU84TgaMHksA"} 
+    }).then(res => {console.log(res.data);})
 
 // axios.post('https://nmcnpm.herokuapp.com/api/v1/user/login', {
 //     password: "kiendao",
