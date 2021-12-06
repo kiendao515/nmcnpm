@@ -1,6 +1,8 @@
 const {Bike}= require('../model/bike');
 const {Category} = require('../model/category')
 const {Station} = require('../model/station')
+const {StaffStation} = require('../model/user')
+const jwt = require("jsonwebtoken");
 
 const addBike= async(req,res)=>{
     const{category,station,status}=req.body;
@@ -163,7 +165,7 @@ const getStationWithFreeBike= async(req,res)=>{
 }
 
 /**
- * Danh sách xe hiện có sau khi đã lựa chọn bốt
+ * Danh sách xe free hiện có sau khi đã lựa chọn bốt
  */
 const getFreeBikeFromStation=async(req,res)=>{
     let stationID= req.params.id;
@@ -186,6 +188,117 @@ async function getCounts(stationID) {
     return {free,hiring,waiting,breakdown};
 }
 
+// phần dành cho receptiinist
+
+
+// phần dành cho staff
+/**
+ * lấy danh sách các xe bốt mình quản lý
+ * tìm kiếm xe theo tên danh mục
+ * lọc các xe trong bốt (free, hiring, breakdown, waiting)
+ */
+const getListBikeForStaff= async(req,res)=>{
+    let token;
+    let check=false
+    if(req.headers.authorization){
+        token = req.headers.authorization.split(' ')[1];
+        jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+            if (err) {
+                return res.json({ status: 'fail', msg: "Invalid token" })
+            }
+            staff = StaffStation.find({ _id: decodedToken.userID })
+            if (staff) {
+                check = true;
+                id = decodedToken.userID;
+            } else {
+                return res.json({ status: 'fail', msg: 'Invalid token for staff!' })
+            }
+        });
+        if(check){
+            let station= await Station.findOne({staff:id});
+            Bike.find({station:station._id}).populate("category").populate("station").then(doc=>{
+                return res.json({status:'success',data:doc})
+            })
+        }
+    }else{
+        return res.json({status:'fail',msg:'token required'})
+    }
+}
+
+const searchBikeByName= async(req,res)=>{
+    let token;
+    let check=false
+    if(req.headers.authorization){
+        token = req.headers.authorization.split(' ')[1];
+        jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+            if (err) {
+                return res.json({ status: 'fail', msg: "Invalid token" })
+            }
+            staff = StaffStation.find({ _id: decodedToken.userID })
+            if (staff) {
+                check = true;
+                id = decodedToken.userID;
+            } else {
+                return res.json({ status: 'fail', msg: 'Invalid token for staff!' })
+            }
+        });
+        if(check){
+            let station= await Station.findOne({staff:id});
+            let category= await Category.findOne({name_lower:{ $regex: '.*' + req.query.s.toLowerCase() + '.*' }});
+            console.log(category)
+            if(category){
+                Bike.find({station:station._id,category:category._id}).populate("category").populate("station").then(doc=>{
+                    return res.json({status:'success',data:doc})
+                })
+            }else{
+                return res.json({status:'fail',msg:'tên danh mục ko tồn tại!'})
+            }
+        }
+    }else{
+        return res.json({status:'fail',msg:'token required'})
+    }
+}
+
+const filterBikeByStatus= async(req,res)=>{
+    let sort= req.query.sortBy;
+    console.log(sort);
+    let token;
+    let check=false
+    if(req.headers.authorization){
+        token = req.headers.authorization.split(' ')[1];
+        jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+            if (err) {
+                return res.json({ status: 'fail', msg: "Invalid token" })
+            }
+            staff = StaffStation.find({ _id: decodedToken.userID })
+            if (staff) {
+                check = true;
+                id = decodedToken.userID;
+            } else {
+                return res.json({ status: 'fail', msg: 'Invalid token for staff!' })
+            }
+        });
+        if(check){
+            let station = await Station.findOne({staff:id});
+            if(!sort){
+                return res.json({status:'fail',msg:'Invalid data sort'})
+            }
+            if(sort=== "free" || sort === "waiting" ||sort==="hiring"){
+                try {
+                    Bike.find({station:station._id , status:sort}).populate("category").populate({path:"station",populate:{path:"location"}}).then(doc=>{
+                        return res.json({status:'success',data:doc})
+                    })
+                } catch (error) {
+                    console.log(error);
+                }
+            }else{
+                return res.json({status:'fail',msg:'Data search invalid'})
+            }
+        }
+    }else{
+        return res.json({status:'fail',msg:'token required'})
+    }
+}
 
 exports.addBike=addBike;
 exports.getBikes= getBikes;
@@ -195,3 +308,6 @@ exports.deleteBike= deleteBike;
 exports.getStationWithFreeBike=getStationWithFreeBike;
 exports.getFreeBikeFromStation=getFreeBikeFromStation;
 exports.getStatistics=getStatistics;
+exports.getListBikeForStaff=getListBikeForStaff;
+exports.searchBikeByName=searchBikeByName;
+exports.filterBikeByStatus=filterBikeByStatus;

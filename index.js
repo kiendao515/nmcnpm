@@ -47,7 +47,7 @@ app.use(bikeRoute,function(req,res,next){
     next();
 })
 app.all('*',(req,res)=>{
-    res.send("404 not found")
+    res.json({status:'fail',msg:'-.-Kiểm tra kĩ lại route api'})
 })
 
 app.listen(process.env.PORT || 5000,(req,res)=>{

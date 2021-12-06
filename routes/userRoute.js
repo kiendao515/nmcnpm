@@ -44,6 +44,14 @@ router.post('/api/v1/receptionist/login',userController.receptionistLogin)
 router.get('/api/v1/users',checkReceptionistRole,userController.getAllUser);
 router.post('/api/v1/user/activate/:id',checkReceptionistRole,userController.activate);
 router.get('/api/v1/unactivated/users',checkReceptionistRole,userController.getUnactivatedAccount);
+router.post('/api/v2/receptionist/forgetpass',userController.receptionistForgetPass)
+router.post('/api/v2/receptionist/edit/info',userController.editReceptionistInfo);
+router.get('/api/v2/user/detail/:id',checkReceptionistRole,userController.getDetailUser);
+router.post('/api/v2/user/balance/add/:id',checkReceptionistRole,userController.addBalanceForUser);
+router.put('/api/v2/user/edit/:id',checkReceptionistRole,userController.editDetailUser);
+router.get('/api/v2/search/user',checkReceptionistRole,userController.searchUser);
+router.delete('/api/v2/user/delete/:id',checkReceptionistRole,userController.deleteUSer);
+router.post('/api/v2/receptionist/changepass',userController.changePassForReceptionist);
 
 
 /**
@@ -51,5 +59,8 @@ router.get('/api/v1/unactivated/users',checkReceptionistRole,userController.getU
  * -dang nhap
  */
 router.post('/api/v1/staff/login',userController.staffLogin);
+router.put('/api/v2/staff/edit/info',userController.editStaffInfo);
+router.put('/api/v2/staff/changepass',userController.changePassForStaff);
+router.post('/api/v2/staff/forgetpass',userController.staffForgetPass);
 
 module.exports= router;

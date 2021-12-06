@@ -90,18 +90,18 @@ const login = async (req, res, next) => {
     }
     const token = createJwtToken(user._id)
     res.cookie('token', token)
-    return res.json({ status: 'success', msg: 'login successfully' ,data:user})
+    return res.json({ status: 'success', msg: 'login successfully', data: user })
 }
 
 //change password tài khoản thường
-const normalUserChangePass= async(req,res)=>{
-    const userID= req.params.id;
-    let user= await User.findOne({_id:userID});
-    if(!user){
-        return res.json({status:'fail',msg:'user not found!'})
+const normalUserChangePass = async (req, res) => {
+    const userID = req.params.id;
+    let user = await User.findOne({ _id: userID });
+    if (!user) {
+        return res.json({ status: 'fail', msg: 'user not found!' })
     }
-    const {oldPassword,newPassword}= req.body;
-    if(oldPassword&&newPassword){
+    const { oldPassword, newPassword } = req.body;
+    if (oldPassword && newPassword) {
         let check = false;
         try {
             check = await bcrypt.compare(oldPassword, user.password);
@@ -111,10 +111,10 @@ const normalUserChangePass= async(req,res)=>{
         }
         if (!check) {
             return res.json({ status: 'fail', msg: 'Old password is not match' });
-        }else{
+        } else {
             let hashedPassword = await bcrypt.hash(newPassword, 12);
-            User.findOneAndUpdate({_id:userID},{password:hashedPassword},{new:true},(err,doc)=>{
-                return res.json({status:'success',msg:'password has changed',info:doc})
+            User.findOneAndUpdate({ _id: userID }, { password: hashedPassword }, { new: true }, (err, doc) => {
+                return res.json({ status: 'success', msg: 'password has changed', info: doc })
             })
         }
 
@@ -139,7 +139,7 @@ const adminLogin = async (req, res, next) => {
                 return res.json({ status: 'fail', msg: 'Password is not match!' })
             }
             let tokenn = createJwtToken(doc._id);
-            return res.json({ status: "success", token: tokenn,data:doc});
+            return res.json({ status: "success", token: tokenn, data: doc });
         })
     } else {
         const token = req.headers.authorization.split(' ')[1];
@@ -151,8 +151,8 @@ const adminLogin = async (req, res, next) => {
                 Admin.findOne({ _id: decodedToken.userID }, (err, doc) => {
                     if (err) {
                         return res.json({ status: 'fail', msg: 'server error' })
-                    } else if (doc){
-                        return res.json({ status: 'success', msg: "login successfully!", token: token ,data:doc})
+                    } else if (doc) {
+                        return res.json({ status: 'success', msg: "login successfully!", token: token, data: doc })
                     }
                 })
             });
@@ -208,25 +208,25 @@ const addAccount = async (req, res) => {
         res.status(500).send({ msg: 'Server Error' });
     }
     if (role === "staff") {
-        let staffs=await StaffStation.find({});
-        let phoneNumberArray= staffs.map(data=>data.phoneNumber);
-        let identityNumberArray= staffs.map(data=>data.identifyNumber)
-        if(phoneNumberArray.includes(phoneNumber)){
+        let staffs = await StaffStation.find({});
+        let phoneNumberArray = staffs.map(data => data.phoneNumber);
+        let identityNumberArray = staffs.map(data => data.identifyNumber)
+        if (phoneNumberArray.includes(phoneNumber)) {
             return res.status(200).json({ status: 'fail', msg: 'Telephone Number Existed!' })
-        }else if(identityNumberArray.includes(identifyNumber)){
-            return res.status(200).json({status:'fail',msg:'Identity Number Existed!'})
+        } else if (identityNumberArray.includes(identifyNumber)) {
+            return res.status(200).json({ status: 'fail', msg: 'Identity Number Existed!' })
         }
         user = new StaffStation({
             identifyNumber, userName, password: hashedPassword, email, phoneNumber, address, name, staffID: Date.now(), role: "staff"
         })
     } else if (role === "receptionist") {
-        let staffs=await Receptionist.find({});
-        let phoneNumberArray= staffs.map(data=>data.phoneNumber);
-        let identityNumberArray= staffs.map(data=>data.identifyNumber)
-        if(phoneNumberArray.includes(phoneNumber)){
+        let staffs = await Receptionist.find({});
+        let phoneNumberArray = staffs.map(data => data.phoneNumber);
+        let identityNumberArray = staffs.map(data => data.identifyNumber)
+        if (phoneNumberArray.includes(phoneNumber)) {
             return res.status(200).json({ status: 'fail', msg: 'Phone Number Existed!' })
-        }else if(identityNumberArray.includes(identifyNumber)){
-            return res.status(200).json({status:'fail',msg:'Identity Number existed!'})
+        } else if (identityNumberArray.includes(identifyNumber)) {
+            return res.status(200).json({ status: 'fail', msg: 'Identity Number existed!' })
         }
         user = new Receptionist({
             identifyNumber, userName, password: hashedPassword, email, phoneNumber, address, name, receptionistID: Date.now(), role: "receptionist"
@@ -440,6 +440,7 @@ const forgetPass = async (req, res) => {
  * chuc nang cua receptionist
  * dang nhap
  * add users, edit user, delete user, get users , activate account , get account that not activated
+ * thay đổi tt cá nhân
  * @param {*} req 
  * @param {*} res 
  * @returns 
@@ -467,7 +468,7 @@ const receptionistLogin = async (req, res) => {
             return res.json({ status: 'fail', msg: 'Password is not match!' })
         }
         const token = createJwtToken(admin._id)
-        return res.json({status:'success',msg: "login successfully", token: token,data:admin});
+        return res.json({ status: 'success', msg: "login successfully", token: token, data: admin });
 
     } else {
         const token = req.headers.authorization.split(' ')[1];
@@ -480,7 +481,7 @@ const receptionistLogin = async (req, res) => {
                     if (err) {
                         return res.json({ status: 'fail', msg: 'server error' })
                     } else if (doc) {
-                        return res.json({ status: 'success', msg: "login successfully!", token: token,data:doc })
+                        return res.json({ status: 'success', msg: "login successfully!", token: token, data: doc })
                     }
                 })
             });
@@ -494,6 +495,11 @@ const getAllUser = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(200).json({ msg: 'Invalid input, please check your data' });
     }
+    // let sort = req.query.sortBy;
+    // if(!req.query.sortBy){
+    //     return res.json({status:'fail',msg:'Missing data sort'})
+    // }
+    // if(sort === "")
     try {
         await User.find({}, (err, doc) => {
             res.json(doc);
@@ -501,6 +507,86 @@ const getAllUser = async (req, res) => {
     } catch (error) {
         console.log(error);
     }
+}
+
+// gte detail user
+const getDetailUser= async(req,res)=>{
+    let id= req.params.id;
+    if(!id){
+        return res.json({status:'fail',msg:'Id paramter missing'})
+    }
+    User.find({_id:id},(err,doc)=>{
+        if(err){
+            return res.json({status:'fail',msg:'server error :('})
+        }
+        return res.json({status:'success',data:doc})
+    })
+}
+
+// chỉnh sửa thông tin người dùng
+const editDetailUser =async(req,res)=>{
+    let id= req.params.id;
+    if(!id){
+        return res.json({status:'fail',msg:'UserID is missing'})
+    }
+    User.findOneAndUpdate({_id:id},req.body,{new:true},(err,doc)=>{
+        if(err){
+            return res.json({status:'fail',msg:'server error'})
+        }
+        if(!doc){
+            return res.json({status:'fail',msg:'User not found'})
+        }
+        return res.json({status:'success',msg:'update successfully'})
+    })
+}
+
+// tìm kiếm user 
+const searchUser = async(req,res)=>{
+    let s= req.query.s;
+    if(!s){
+        return res.json({status:'fail',msg:'missing query parameter'})
+    }
+    User.find({ $or: [{ name: s }, { phoneNumber: s }, { email: s},{residentID:s}] },(err,doc)=>{
+        if(err){
+            return res.json({status:'fail',msg:'server error'})
+        }
+        if(!doc){
+            return res.json({status:'success',msg:'Không tìm thấy người dùng'})
+        }
+        return res.json({status:'success',data:doc})
+    })
+}
+
+// xóa người dùng user
+const deleteUSer= async(req,res)=>{
+    let id= req.params;
+    if(!id){
+        return res.json({status:'fail',msg:'Id paramter is missing'})
+    }
+    User.findOneAndRemove({_id:id},(err,doc)=>{
+        if(err)return res.json({status:'fail',msg:'server error'})
+        if(!doc){
+            return res.json({status:'fail',msg:'User not found'})
+        }
+        return res.json({status:'fail',msg:'Delete user successfully'})
+    })
+}
+
+// thêm tiền cho tài khoản
+const addBalanceForUser= async(req,res)=>{
+    let id = req.params.id;
+    if(!id){
+        return res.json({status:'fail',msg:'server error'})
+    }
+    User.findOneAndUpdate({_id:id},{balance:req.body.balance},{new:true},(err,doc)=>{
+        if(err){
+            return res.json({status:'fail',msg:'server error'})
+        }
+        if(!doc){
+            return res.json({status:'fail',msg:'Account user is not found'})
+        }
+        return res.json({status:'success',msg:'Add balance successfully'})
+    })
 }
 
 // activate acc
@@ -528,6 +614,35 @@ const getUnactivatedAccount = async (req, res) => {
     }
 }
 
+// thay đổi tt cá nhân
+const editReceptionistInfo = async(req,res)=>{
+    let token;
+    let check=false
+    if(req.headers.authorization){
+        token = req.headers.authorization.split(' ')[1];
+        jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+            if (err) {
+                return res.json({ status: 'fail', msg: "Invalid token" })
+            }
+            staff = Receptionist.find({ _id: decodedToken.userID })
+            if (staff) {
+                check = true;
+                id = decodedToken.userID;
+            } else {
+                return res.json({ status: 'fail', msg: 'Invalid token for receptionist!' })
+            }
+        });
+        if(check){
+           Receptionist.findOneAndUpdate({_id:id},req.body,{new:true},(err,doc)=>{
+               if(err){ return res.json({status:'fail',msg:'server error'})}
+               return res.json({status:'success',msg:'update info successfully'})
+
+           })
+        }
+    }else{
+        return res.json({status:'fail',msg:'token required'})
+    }
+}
 
 /**
  * chức năng của staff
@@ -555,7 +670,7 @@ const staffLogin = async (req, res) => {
             return res.json({ status: 'fail', msg: 'Password is not match!' })
         }
         const token = createJwtToken(staff._id)
-        return res.json({status:'success',msg: "login successfully", token: token,data:staff});
+        return res.json({ status: 'success', msg: "login successfully", token: token, data: staff });
     } else {
         const token = req.headers.authorization.split(' ')[1];
         if (token) {
@@ -567,41 +682,191 @@ const staffLogin = async (req, res) => {
                     if (err) {
                         return res.json({ status: 'fail', msg: 'server error' })
                     } else if (doc) {
-                        return res.json({ status: 'success', msg: "login successfully!", token: token,data:doc })
+                        return res.json({ status: 'success', msg: "login successfully!", token: token, data: doc })
                     }
                 })
             });
         }
     }
-    // const { email, password } = req.body;
-    // console.log(email, password)
-    // let admin;
-    // try {
-    //     admin = await StaffStation.findOne({ email: email });
-    // } catch (error) {
-    //     console.log(error)
-    // }
-    // if (!admin) {
-    //     return res.json({ status: 'fail', msg: 'email not found' })
-    // }
-    // let check = false;
-    // try {
-    //     check = await bcrypt.compare(password, admin.password);
-    // } catch (err) {
-    //     console.log(err)
-    // }
-    // if (!check) {
-    //     return res.json({ status: 'fail', msg: 'Password is not match!' })
-    // }
-    // const token = createJwtToken(admin._id)
-    // res.cookie('token', token)
-    // return res.json({ msg: "login successfully", token: token });
 }
+const editStaffInfo = async (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
+    if (token) {
+        jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+            if (err) {
+                return res.json({ status: 'fail', msg: "Invalid token" })
+            }
+            let staff = StaffStation.findOne({ _id: decodedToken.userID })
+            if (!staff) {
+                return res.json({ status: 'fail', msg: 'Staff token invalid' })
+            }
+            StaffStation.findOneAndUpdate({ _id: decodedToken.userID }, req.body, { new: true }, (err, doc) => {
+                if (err) {
+                    return res.json({ status: 'fail', msg: 'server error' })
+                }
+                if (!doc) {
+                    return res.json({ status: 'fail', msg: 'co gi do sai sai' })
+                }
+                return res.json({ status: 'success', msg: 'Update info successfully' })
+            })
+        });
+    }
+}
+// thay đổi pass cho receptionist
+const changePassForReceptionist= async(req,res)=>{
+    let check = false;
+    let id;
+    let staff;
+    const token = req.headers.authorization.split(' ')[1];
+    if (token) {
+        jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+            if (err) {
+                return res.json({ status: 'fail', msg: "Invalid token" })
+            }
+            staff = Receptionist.find({ _id: decodedToken.userID })
+            if (staff) {
+                console.log(staff)
+                check = true;
+                id = decodedToken.userID;
+            } else {
+                return res.json({ status: 'fail', msg: 'Staff not found!' })
+            }
+        });
+        let comparePass = false;
+        console.log(id);
+        if (check) {
+            let { oldPass, newPass } = req.body;
+            let s;
+            try {
+                s = await Receptionist.findOne({ _id: id });
+            } catch (error) {
+                console.log(error)
+            }
+            if (!s) {
+                return res.json({ status: 'fail', msg: 'staff not found' })
+            }
+            try {
+                comparePass = await bcrypt.compare(oldPass, s.password);
+                console.log(oldPass,s.password, comparePass);
+                
+            } catch (err) {
+                console.log(err)
+            }
+            console.log(comparePass);
+            if (!comparePass) {
+                return res.json({ status: 'fail', msg: 'Password is not match!' })
+            }
+            if (comparePass) {
+                let hashedPassword = await bcrypt.hash(newPass, 12);
+                Receptionist.findOneAndUpdate({ _id: id }, { password: hashedPassword }, { new: true }, (err, doc) => {
+                    if (err) return res.json({ status: 'fail', msg: '500 server error hehe' })
+                    if (!doc) {
+                        return res.json({ status: 'fail', msg: 'staff not found!' })
+                    }else{
+                        return res.json({ status: 'success', msg: 'password has changed', data: doc })
+                    }
+                })
+            }
+        }
+    }
+}
+
+// thay đổi pass của staff
+const changePassForStaff = async (req, res) => {
+    let check = false;
+    let id;
+    let staff;
+    const token = req.headers.authorization.split(' ')[1];
+    if (token) {
+        jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+            if (err) {
+                return res.json({ status: 'fail', msg: "Invalid token" })
+            }
+            staff = StaffStation.find({ _id: decodedToken.userID })
+            if (staff) {
+                console.log(staff)
+                check = true;
+                id = decodedToken.userID;
+            } else {
+                return res.json({ status: 'fail', msg: 'Staff not found!' })
+            }
+        });
+        let comparePass = false;
+        console.log(id);
+        if (check) {
+            let { oldPass, newPass } = req.body;
+            let s;
+            try {
+                s = await StaffStation.findOne({ _id: id });
+            } catch (error) {
+                console.log(error)
+            }
+            if (!s) {
+                return res.json({ status: 'fail', msg: 'staff not found' })
+            }
+            try {
+                comparePass = await bcrypt.compare(oldPass, s.password);
+                console.log(oldPass,s.password, comparePass);
+                
+            } catch (err) {
+                console.log(err)
+            }
+            console.log(comparePass);
+            if (!comparePass) {
+                return res.json({ status: 'fail', msg: 'Password is not match!' })
+            }
+            if (comparePass) {
+                let hashedPassword = await bcrypt.hash(newPass, 12);
+                StaffStation.findOneAndUpdate({ _id: id }, { password: hashedPassword }, { new: true }, (err, doc) => {
+                    if (err) return res.json({ status: 'fail', msg: '500 server error hehe' })
+                    if (!doc) {
+                        return res.json({ status: 'fail', msg: 'staff not found!' })
+                    }else{
+                        return res.json({ status: 'success', msg: 'password has changed', data: doc })
+                    }
+                })
+            }
+        }
+    }
+}
+
+// thay đổi pass của receptionist 
+const staffForgetPass= async(req,res)=>{
+    const staff = await StaffStation.findOne({ email: req.body.email });
+    if (!staff)
+        return res.status(200).json({ status: 'fail', msg: 'Email not found' });
+    const n = crypto.randomInt(100000, 999999);
+    console.log(n);
+    const newpass = await bcrypt.hash(n.toString(), 12);
+    // const link = `http://locahost:5000/api/v1/password-reset/${user._id}/${data.token}`
+    await SendEmail(staff.email, "Your new password", n);
+    await StaffStation.findOneAndUpdate({ email: staff.email }, { password: newpass }, { new: true }).then(doc => {
+        res.json({ status: true, msg: 'Check your email to receive new password' })
+    })
+}
+
+const receptionistForgetPass= async(req,res)=>{
+    const receptinst = await Receptionist.findOne({ email: req.body.email });
+    if (!receptinst)
+        return res.status(200).json({ status: 'fail', msg: 'Email not found' });
+    const n = crypto.randomInt(100000, 999999);
+    console.log(n);
+    const newpass = await bcrypt.hash(n.toString(), 12);
+    await SendEmail(receptinst.email, "Your new password", n);
+    await Receptionist.findOneAndUpdate({ email: receptinst.email }, { password: newpass }, { new: true }).then(doc => {
+        res.json({ status: true, msg: 'Check your email to receive new password' })
+    })
+}
+
 
 exports.changePass = changePass;
 exports.forgetPass = forgetPass;
 exports.searchAccount = searchAccount;
 exports.staffLogin = staffLogin;
+exports.editStaffInfo = editStaffInfo;
+exports.changePassForStaff = changePassForStaff;
+exports.receptionistForgetPass= receptionistForgetPass;
+exports.staffForgetPass= staffForgetPass;
 exports.register = register;
 exports.login = login;
 exports.addAccount = addAccount;
@@ -614,4 +879,11 @@ exports.receptionistLogin = receptionistLogin;
 exports.activate = activate;
 exports.getUnactivatedAccount = getUnactivatedAccount;
 exports.getDetailAccount = getDetailAccount;
-exports.normalUserChangePass= normalUserChangePass;
+exports.getDetailUser= getDetailUser;
+exports.editDetailUser= editDetailUser;
+exports.addBalanceForUser=addBalanceForUser;
+exports.normalUserChangePass = normalUserChangePass;
+exports.editReceptionistInfo= editReceptionistInfo;
+exports.searchUser= searchUser;
+exports.deleteUSer= deleteUSer;
+exports.changePassForReceptionist= changePassForReceptionist;

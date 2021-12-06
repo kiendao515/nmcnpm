@@ -11,9 +11,8 @@ const checkReceptionRole = async (req, res, next) => {
       return res.json({msg:"you need to login first"})
     }
     jwt.verify(token, "kiendao2001",function(err,decodedToken) {
-      console.log(decodedToken.userID);
       if(err){
-        return res.json({msg:"Invalid token"})
+        return res.json({status:'fail',msg:"Invalid token"})
       }
 
       Receptionist.findOne({ _id: decodedToken.userID},function(err,doc){

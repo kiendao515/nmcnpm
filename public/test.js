@@ -37,17 +37,11 @@
 //         return response.json(); 
 // }
 
-const api = `https://nmcnpm.herokuapp.com/api/v2/station/add`;
-axios.post(api,
-    {
-        staff:"staffid...",
-        location:"locationid...",
-        phoneNumber:"....",
-        name:"tên bốt..."
-    },
+const api = `https://nmcnpm.herokuapp.com/api/v2/search/station?s=bốt số 1`;
+axios.get(api,
     { 
         headers: 
-        {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2MTcyZGQ2OTNlMDliMWEwOGFmZDk4NDEiLCJpYXQiOjE2MzgyNDEzMjIsImV4cCI6MTYzODI0NDkyMn0.t7Q7ReysYLhhZZyyumuFHWX2LOqlbEmXU84TgaMHksA"} 
+        {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2MTcyZGQ2OTNlMDliMWEwOGFmZDk4NDEiLCJpYXQiOjE2MzgyOTEwMDAsImV4cCI6MTYzODI5NDYwMH0.tzMNghSL79acVwfHJ831dcRxbpOidErdV0J0hYok_gY"} 
     }).then(res => {console.log(res.data);})
 
 // axios.post('https://nmcnpm.herokuapp.com/api/v1/user/login', {

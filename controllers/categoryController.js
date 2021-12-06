@@ -12,8 +12,9 @@ const jwt = require("jsonwebtoken");
  */
 const addCategory= async(req,res)=>{
     const {cost,image,description,name}= req.body;
-    let category= new Category({cost,image,description,name});
-    Category.findOne({name:name},function(err,doc){
+    let name_lower= name.toLowerCase();
+    let category= new Category({cost,image,description,name,name_lower});
+    Category.findOne({name_lower:name_lower},function(err,doc){
         if(err){
             return res.json({status:'fail',msg:'server error'})
         }else if(doc){

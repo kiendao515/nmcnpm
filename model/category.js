@@ -11,6 +11,10 @@ const categorySchema= new mongoose.Schema({
         type:String,
         required:true
     },
+    name_lower:{
+        type:String,
+        required:true
+    },
     isDelete:{
         type:Boolean,
         required:true,
