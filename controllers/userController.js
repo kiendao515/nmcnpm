@@ -559,16 +559,18 @@ const searchUser = async(req,res)=>{
 
 // xóa người dùng user
 const deleteUSer= async(req,res)=>{
-    let id= req.params;
+    let id= req.params.id;
     if(!id){
         return res.json({status:'fail',msg:'Id paramter is missing'})
     }
     User.findOneAndRemove({_id:id},(err,doc)=>{
-        if(err)return res.json({status:'fail',msg:'server error'})
+        if(err){
+            return res.json({status:'fail',msg:'server error'})
+        }
         if(!doc){
             return res.json({status:'fail',msg:'User not found'})
         }
-        return res.json({status:'fail',msg:'Delete user successfully'})
+        return res.json({status:'success',msg:'Delete user successfully'})
     })
 }
 
