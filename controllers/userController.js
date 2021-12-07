@@ -60,37 +60,45 @@ const register = async (req, res) => {
 
 // login - dang nhap tai khoan thuong
 const login = async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(200).json({ msg: 'Invalid input, please check your data' });
+    if (!req.headers.authorization) {
+        const { email, password } = req.body;
+        let staff;
+        try {
+            staff = await User.findOne({ email: email });
+        } catch (error) {
+            console.log(error)
+        }
+        if (!staff) {
+            return res.json({ status: 'fail', msg: 'email not found' })
+        }
+        let check = false;
+        try {
+            check = await bcrypt.compare(password, staff.password);
+        } catch (err) {
+            console.log(err)
+        }
+        if (!check) {
+            return res.json({ status: 'fail', msg: 'Password is not match!' })
+        }
+        const token = createJwtToken(staff._id)
+        return res.json({ status: 'success', msg: "login successfully", token: token, data: staff });
+    } else {
+        const token = req.headers.authorization.split(' ')[1];
+        if (token) {
+            jwt.verify(token, "kiendao2001", function (err, decodedToken) {
+                if (err) {
+                    return res.json({ status: 'fail', msg: "Invalid token" })
+                }
+                User.findOne({ _id: decodedToken.userID }, (err, doc) => {
+                    if (err) {
+                        return res.json({ status: 'fail', msg: 'server error' })
+                    } else if (doc) {
+                        return res.json({ status: 'success', msg: "login successfully!", token: token, data: doc })
+                    }
+                })
+            });
+        }
     }
-    const { email, password } = req.body;
-    let user;
-    try {
-        user = await User.findOne({ email: email });
-    } catch (err) {
-        console.log(err)
-    }
-    if (!user) {
-        return res.status(200).json({ status: 'fail', msg: 'Email not found' })
-    }
-
-    let check = false;
-    try {
-        check = await bcrypt.compare(password, user.password);
-    } catch (err) {
-        console.errors(err.message);
-        res.status(200).send({ status: 'fail', msg: 'Server Error' });
-    }
-    if (!check) {
-        return res.json({ status: 'fail', msg: 'Password is not match' });
-    }
-    if (user.activate === "false") {
-        return res.json({ status: 'fail', msg: 'You need to see receptionist to activate your account' })
-    }
-    const token = createJwtToken(user._id)
-    res.cookie('token', token)
-    return res.json({ status: 'success', msg: 'login successfully', data: user })
 }
 
 //change password tài khoản thường
