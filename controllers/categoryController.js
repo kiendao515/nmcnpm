@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken");
 /**
  * add category
  * get category 
+ * xem chi tiết 1 category 
  */
 const addCategory= async(req,res)=>{
     const {cost,image,description,name}= req.body;
@@ -32,6 +33,23 @@ const getCategory = async(req,res)=>{
     })
 }
 
+const getDetailCategory = async(req,res)=>{
+    let id = req.params.id;
+    if(!id){
+        return res.json({status:'fail',msg:'Missing id parameter'})
+    }
+    Category.find({_id:id},(err,doc)=>{
+        if(err){
+            return res.json({status:'fail',msg:'server error'})
+        }
+        if(!doc){
+            return res.json({statú:'fail',msg:'category not found'})
+        }
+        return res.json({status:'success',data:doc})
+    })
+}
+
 exports.addCategory= addCategory;
 exports.getCategory= getCategory;
+exports.getDetailCategory=getDetailCategory;
 
