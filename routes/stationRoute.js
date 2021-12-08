@@ -9,4 +9,5 @@ router.get('/api/v2/station/detail/:id',checkAdminRole,stationController.detailS
 router.get('/api/v2/search/station',checkAdminRole,stationController.searchStationByName);
 router.put("/api/v2/station/edit/:id",checkAdminRole,stationController.editStation);
 router.delete("/api/v2/station/delete/:id",checkAdminRole,stationController.deleteStation);
+router.get("/api/v2/station/detail/statistic/:id",checkAdminRole,stationController.getStatisticOfStation);
 module.exports= router;

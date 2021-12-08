@@ -174,6 +174,7 @@ const getFreeBikeFromStation=async(req,res)=>{
     })
 }
 
+
 /**
  * thống kê xe sau khi chọn bốt
  */
@@ -181,6 +182,7 @@ const getStatistics= async(req,res)=>{
     let stationID= req.params.id;
     getCounts(stationID).then(doc=>{res.json({status:'success',data:doc})}).catch((err)=>console.log(err))
 }
+
 
 async function getCounts(stationID) {
     let [free,hiring,waiting,breakdown] = await Promise.all([Bike.countDocuments({status:"free",station:stationID}),Bike.countDocuments({status:"hiring",station:stationID}),

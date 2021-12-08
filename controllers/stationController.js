@@ -1,6 +1,8 @@
 const {Station}= require('../model/station')
 const {StaffStation}= require('../model/user')
-const {Location}= require('../model/location')
+const {Bike} = require('../model/bike');
+const {Location}= require('../model/location');
+const { Category } = require('../model/category');
 
 const addStation= async(req,res)=>{
     const {staff,location,phoneNumber,name}= req.body;
@@ -36,6 +38,37 @@ const detailStation = async(req,res)=>{
         }
         res.json({status:"success",data:doc})
     })
+}
+
+const getStatisticOfStation = async(req,res)=>{
+    let stationID = req.params.id;
+    if(!stationID){
+        return res.json({status:'fail',msg:'missing id parameter'})
+    }
+    let categoriesID= await Bike.find({station:stationID}).distinct('category');
+    console.log(categoriesID);
+    let statistic=[];
+    categoriesID.forEach(function(item){
+        getCounts(stationID,item).then(document =>{
+            statistic.push(document);
+        })
+    })
+    Station.find({_id:stationID}).populate("staff").populate("location").then(doc=>{
+        return res.json({status:'success',data:doc, statistic : statistic})
+    })
+    
+
+}
+
+async function getCounts(stationID, categoryID) {
+    let [category,free,hiring,waiting,breakdown] = await Promise.all([
+        Category.findOne({_id:categoryID}),
+        Bike.countDocuments({status:"free",station:stationID , category:categoryID}),
+        Bike.countDocuments({status:"hiring",station:stationID, category:categoryID}),
+        Bike.countDocuments({status:"waiting",station:stationID, category:categoryID}),
+        Bike.countDocuments({status:"breakdown",station:stationID, category:categoryID})
+    ]);
+    return {category,free,hiring,waiting,breakdown};
 }
 
 const editStation=async(req,res)=>{
@@ -102,3 +135,4 @@ exports.detailStation=detailStation;
 exports.searchStationByName=searchStationByName;
 exports.editStation=editStation;
 exports.deleteStation=deleteStation;
+exports.getStatisticOfStation = getStatisticOfStation;
