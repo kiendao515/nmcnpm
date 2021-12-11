@@ -5,6 +5,7 @@ const categoryRoute= require('./routes/categoryRoute')
 const locationRoute= require('./routes/locationRoute')
 const stationRoute= require('./routes/stationRoute')
 const bikeRoute= require('./routes/bikeRoute')
+const hiringBikeRoute= require('./routes/hiringBikeRoute');
 var cors = require('cors');
 const app = express();
 connectionDB();
@@ -44,6 +45,10 @@ app.use(stationRoute,function(req,res,next){
 })
 
 app.use(bikeRoute,function(req,res,next){
+    next();
+})
+
+app.use(hiringBikeRoute,function(req,res,next){
     next();
 })
 app.all('*',(req,res)=>{
